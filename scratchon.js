@@ -397,7 +397,7 @@ scratchOn.searchProjects = async function (query,mode,lang,offset,limit){
    var resultList = [];
    for(var i = 0;i < results.length;i++){
       var that = results[i];
-      resultList.push(new Project(that.id,((that.author ? that.author.username : false) ? that.author.username : "ScratchOnMissingUser"),((that.author ? that.author.id : false) ? that.author.id : -1),that.title,{instructions: that.instructions,description: that.description},that.history,that.stats,that.remix,that.image)));
+      resultList.push(new Project(that.id,((that.author ? that.author.username : false) ? that.author.username : "ScratchOnMissingUser"),((that.author ? that.author.id : false) ? that.author.id : -1),that.title,{instructions: that.instructions,description: that.description},that.history,that.stats,that.remix,that.image));
    };
    return resultList;
 };
