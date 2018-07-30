@@ -390,7 +390,7 @@ scratchOn.getUser = async function (user){
    return new User(that.id,that.username,that.history,that.profile);
 }
 scratchOn.searchProjects = async function (q,mode,lang,offset,limit){
-   var results = await scratchOn.scratchGet("/search/","projects","/?query=" + (q ? q : "") + "&mode=" + (mode ? mode : (q ? "popular" : "trending")) + "&language=" + (lang ? lang : "en") + "&offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 20),"GET");
+   var results = await scratchOn.scratchGet("/search/","projects","/?q=" + (q ? q : "") + "&mode=" + (mode ? mode : (q ? "popular" : "trending")) + "&language=" + (lang ? lang : "en") + "&offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 20),"GET");
    if(results === "FetchError"){
       return [];
    };
@@ -402,7 +402,7 @@ scratchOn.searchProjects = async function (q,mode,lang,offset,limit){
    return resultList;
 };
 scratchOn.searchStudios = async function (q,mode,lang,offset,limit){
-   var results = await scratchOn.scratchGet("/search/","studios","/?query=" + (q ? q : "") + "&mode=" + (mode ? mode : (q ? "popular" : "trending")) + "&language=" + (lang ? lang : "en") + "&offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 20),"GET");
+   var results = await scratchOn.scratchGet("/search/","studios","/?q=" + (q ? q : "") + "&mode=" + (mode ? mode : (q ? "popular" : "trending")) + "&language=" + (lang ? lang : "en") + "&offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 20),"GET");
    if(results === "FetchError"){
       return [];
    };
