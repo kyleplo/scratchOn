@@ -31,57 +31,16 @@ class Project {
       this.endpoint = "/projects/";
    }
    async getRemixes(offset,limit) {
-      var remixes = await scratchOn.scratchGet(this.endpoint, this.id, "/remixes/?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
-      if(remixes === "FetchError"){
-         return [];
-      };
-      var remixList = [];
-      for(var i = 0;i < remixes.length;i++){
-         var that = remixes[i];
-         remixList.push(new Project(that.id,((that.author ? that.author.username : false) ? that.author.username : "ScratchOnMissingUser"),((that.author ? that.author.id : false) ? that.author.id : -1),that.title,{instructions: that.instructions,description: that.description},that.history,that.stats,that.remix,that.image));
-      };
-      return remixList;
+      return await scratchOn.scratchGetList(false, "project", this.endpoint, this.id, "/remixes?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllRemixes() {
-      var remixes = await scratchOn.scratchGetAll(this.endpoint, this.id, "/remixes/", "GET");
-      if(remixes === "FetchError"){
-         return [];
-      };
-      var remixList = [];
-      for(var i = 0;i < remixes.length;i++){
-         if(remixes[i]){
-            var that = remixes[i];
-            remixList.push(new Project(that.id,((that.author ? that.author.username : false) ? that.author.username : "ScratchOnMissingUser"),((that.author ? that.author.id : false) ? that.author.id : -1),that.title,{instructions: that.instructions,description: that.description},that.history,that.stats,that.remix,that.image));
-         };
-      };
-      return remixList;
+      return await scratchOn.scratchGetList(true, "project", this.endpoint, this.id, "/remixes", "GET");
    }
    async getStudios(offset,limit) {
-      var studios = await scratchOn.scratchGet(this.endpoint, this.id, "/studios/?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
-      if(studios === "FetchError"){
-         return [];
-      };
-      var studioList = [];
-      for(var i = 0;i < studios.length;i++){
-         var that = studios[i];
-         studioList.push(new Studio(that.id,that.owner,that.title,that.description,that.history,that.image,that.stats));
-      };
-      return studioList;
+      return await scratchOn.scratchGetList(false, "studio", this.endpoint, this.id, "/studios?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllStudios() {
-      var studios = await scratchOn.scratchGet(this.endpoint, this.id, "/studios/", "GET");
-      if(studios === "FetchError"){
-         return [];
-      };
-      var studioList = [];
-      for(var i = 0;i < studios.length;i++){
-         var that = studios[i];
-         if(studios[i]){
-            var that = studios[i];
-            studioList.push(new Studio(that.id,that.owner,that.title,that.description,that.history,that.image,that.stats));
-         };
-      };
-      return studioList;
+      return await scratchOn.scratchGetList(true, "studio", this.endpoint, this.id, "/studios", "GET");
    }
    async lovedFavedBy(user) {
       var lovedInfo = await scratchOn.scratchGet(this.endpoint, this.id, "/loves/user/" + user + "?x-token=" + scratchOn.token, "GET");
@@ -92,30 +51,10 @@ class Project {
       return {loved: lovedInfo.userLove,faved: favedInfo.userFavorite};
    }
    async getComments(offset,limit) {
-      var comments = await scratchOn.scratchGet("/comments/project/",this.id,"?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40),"GET");
-      if(comments === "FetchError"){
-         return [];
-      };
-      var commentList = [];
-      for(var i = 0;i < comments.length;i++){
-         var that = comments[i];
-         commentList.push(new Comment(that.id,that["parent_id"],that.content,that.author,{created: that["datetime_created"],modified: that["datetime_modified"]},that["reply_count"],{id: this.id, endpoint: "project/"}));
-      }
-      return commentList;
+      return await scratchOn.scratchGetList(false, "comment", "/comments/project/", this.id, "?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET",{endpoint: "projects/",id: this.id});
    }
    async getAllComments() {
-      var comments = await scratchOn.scratchGetAll("/comments/project/",this.id,"","GET");
-      if(comments === "FetchError"){
-         return [];
-      };
-      var commentList = [];
-      for(var i = 0;i < comments.length;i++){
-         if(comments[i]){
-            var that = comments[i];
-            commentList.push(new Comment(that.id,that["parent_id"],that.content,that.author,{created: that["datetime_created"],modified: that["datetime_modified"]},that["reply_count"],{id: this.id, endpoint: "project/"}));
-         }
-      }
-      return commentList;
+      return await scratchOn.scratchGetList(true, "comment", "/comments/project/", this.id, "", "GET",{endpoint: "projects/",id: this.id});
    }
 }
 class Studio {
@@ -158,28 +97,10 @@ class Comment {
       this.endpoint = "/comments/";
    }
    async getReplies(offset,limit) {
-      var replies = await scratchOn.scratchGet(this.endpoint + this.source.endpoint,this.source.id + "/",this.id + "?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40),"GET");
-      if(replies === "FetchError"){
-         return [];
-      };
-      var replyList = [];
-      for(var i = 0;i < replies.length;i++){
-         var that = replies[i];
-         replyList.push(new Comment(that.id,that["parent_id"],that.content,that.author,{created: that["datetime_created"],modified: that["datetime_modified"]},that["reply_count"],this.source));
-      }
-      return replyList;
+      return await scratchOn.scratchGetList(false, "comment", this.endpoint + this.source.endpoint, this.source.id + "/" + this.id, "?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET",this.source);
    }
    async getAllReplies() {
-      var replies = await scratchOn.scratchGet(this.endpoint + this.source.endpoint,this.source.id + "/",this.id + "?offset=0&limit=" + (this.replies > 0 ? this.replies : 0),"GET");
-      if(replies === "FetchError"){
-         return [];
-      };
-      var replyList = [];
-      for(var i = 0;i < replies.length;i++){
-         var that = replies[i];
-         replyList.push(new Comment(that.id,that["parent_id"],that.content,that.author,{created: that["datetime_created"],modified: that["datetime_modified"]},that["reply_count"],this.source));
-      }
-      return replyList;
+      return await scratchOn.scratchGetList(true, "comment", this.endpoint + this.source.endpoint, this.source.id + "/" + this.id, "", "GET",this.source);
    }
 }
 class User {
@@ -204,148 +125,40 @@ class User {
       this.endpoint = "/users/";
    }
    async getProjects(offset,limit){
-      var projects = await scratchOn.scratchGet(this.endpoint, this.username, "/projects/?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
-      if(projects === "FetchError"){
-         return [];
-      };
-      var projectList = [];
-      for(var i = 0;i < projects.length;i++){
-         var that = projects[i];
-         projectList.push(new Project(that.id,((that.author ? that.author.username : false) ? that.author.username : "ScratchOnMissingUser"),((that.author ? that.author.id : false) ? that.author.id : -1),that.title,{instructions: that.instructions,description: that.description},that.history,that.stats,that.remix,that.image));
-      };
-      return projectList;
+      return await scratchOn.scratchGetList(false, "project", this.endpoint, this.id, "/projects?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllProjects(){
-      var projects = await scratchOn.scratchGetAll(this.endpoint, this.username, "/projects/", "GET");
-      if(projects === "FetchError"){
-         return [];
-      };
-      var projectList = [];
-      for(var i = 0;i < projects.length;i++){
-         var that = projects[i];
-         projectList.push(new Project(that.id,((that.author ? that.author.username : false) ? that.author.username : "ScratchOnMissingUser"),((that.author ? that.author.id : false) ? that.author.id : -1),that.title,{instructions: that.instructions,description: that.description},that.history,that.stats,that.remix,that.image));
-      };
-      return projectList;
+      return await scratchOn.scratchGetList(true, "project", this.endpoint, this.id, "/projects", "GET");
    }
    async getFavorites(offset,limit){
-      var projects = await scratchOn.scratchGet(this.endpoint, this.username, "/favorites/?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
-      if(projects === "FetchError"){
-         return [];
-      };
-      var projectList = [];
-      for(var i = 0;i < projects.length;i++){
-         var that = projects[i];
-         projectList.push(new Project(that.id,((that.author ? that.author.username : false) ? that.author.username : "ScratchOnMissingUser"),((that.author ? that.author.id : false) ? that.author.id : -1),that.title,{instructions: that.instructions,description: that.description},that.history,that.stats,that.remix,that.image));
-      };
-      return projectList;
+      return await scratchOn.scratchGetList(false, "project", this.endpoint, this.id, "/favorites?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllFavorites(){
-      var projects = await scratchOn.scratchGetAll(this.endpoint, this.username, "/favorites/", "GET");
-      if(projects === "FetchError"){
-         return [];
-      };
-      var projectList = [];
-      for(var i = 0;i < projects.length;i++){
-         var that = projects[i];
-         projectList.push(new Project(that.id,((that.author ? that.author.username : false) ? that.author.username : "ScratchOnMissingUser"),((that.author ? that.author.id : false) ? that.author.id : -1),that.title,{instructions: that.instructions,description: that.description},that.history,that.stats,that.remix,that.image));
-      };
-      return projectList;
+      return await scratchOn.scratchGetList(true, "project", this.endpoint, this.id, "/favorites", "GET");
    }
    async getFollowers(offset,limit){
-      var users = await scratchOn.scratchGet(this.endpoint, this.username, "/followers/?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
-      if(users === "FetchError"){
-         return [];
-      };
-      var userList = [];
-      for(var i = 0;i < users.length;i++){
-         var that = users[i];
-         userList.push(new User(that.id,that.username,that.history,that.profile));
-      };
-      return userList;
+      return await scratchOn.scratchGetList(false, "user", this.endpoint, this.id, "/followers?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllFollowers(offset,limit){
-      var users = await scratchOn.scratchGetAll(this.endpoint, this.username, "/followers/", "GET");
-      if(users === "FetchError"){
-         return [];
-      };
-      var userList = [];
-      for(var i = 0;i < users.length;i++){
-         var that = users[i];
-         userList.push(new User(that.id,that.username,that.history,that.profile));
-      };
-      return userList;
+      return await scratchOn.scratchGetList(true, "user", this.endpoint, this.id, "/followers", "GET");
    }
    async getFollowing(offset,limit){
-      var users = await scratchOn.scratchGet(this.endpoint, this.username, "/following/?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
-      if(users === "FetchError"){
-         return [];
-      };
-      var userList = [];
-      for(var i = 0;i < users.length;i++){
-         var that = users[i];
-         userList.push(new User(that.id,that.username,that.history,that.profile));
-      };
-      return userList;
+      return await scratchOn.scratchGetList(false, "user", this.endpoint, this.id, "/following?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllFollowing(offset,limit){
-      var users = await scratchOn.scratchGetAll(this.endpoint, this.username, "/following/", "GET");
-      if(users === "FetchError"){
-         return [];
-      };
-      var userList = [];
-      for(var i = 0;i < users.length;i++){
-         var that = users[i];
-         userList.push(new User(that.id,that.username,that.history,that.profile));
-      };
-      return userList;
+      return await scratchOn.scratchGetList(true, "user", this.endpoint, this.id, "/following", "GET");
    }
    async getStudiosFollowing(offset,limit) {
-      var studios = await scratchOn.scratchGet(this.endpoint, this.username, "/studios/?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
-      if(studios === "FetchError"){
-         return [];
-      };
-      var studioList = [];
-      for(var i = 0;i < studios.length;i++){
-         var that = studios[i];
-         studioList.push(new Studio(that.id,that.owner,that.title,that.description,that.history,that.image,that.stats));
-      };
-      return studioList;
+      return await scratchOn.scratchGetList(false, "studio", this.endpoint, this.id, "/studios?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllStudiosFollowing() {
-      var studios = await scratchOn.scratchGetAll(this.endpoint, this.username, "/studios/", "GET");
-      if(studios === "FetchError"){
-         return [];
-      };
-      var studioList = [];
-      for(var i = 0;i < studios.length;i++){
-         var that = studios[i];
-         studioList.push(new Studio(that.id,that.owner,that.title,that.description,that.history,that.image,that.stats));
-      };
-      return studioList;
+      return await scratchOn.scratchGetList(true, "studio", this.endpoint, this.id, "/studios", "GET");
    }
    async getStudiosCurating(offset,limit) {
-      var studios = await scratchOn.scratchGet(this.endpoint, this.username, "/studios/curate/?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
-      if(studios === "FetchError"){
-         return [];
-      };
-      var studioList = [];
-      for(var i = 0;i < studios.length;i++){
-         var that = studios[i];
-         studioList.push(new Studio(that.id,that.owner,that.title,that.description,that.history,that.image,that.stats));
-      };
-      return studioList;
+      return await scratchOn.scratchGetList(false, "studio", this.endpoint, this.id, "/studios/curate?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllStudiosCurating() {
-      var studios = await scratchOn.scratchGetAll(this.endpoint, this.username, "/studios/curate/", "GET");
-      if(studios === "FetchError"){
-         return [];
-      };
-      var studioList = [];
-      for(var i = 0;i < studios.length;i++){
-         var that = studios[i];
-         studioList.push(new Studio(that.id,that.owner,that.title,that.description,that.history,that.image,that.stats));
-      };
-      return studioList;
+      return await scratchOn.scratchGetList(true, "studio", this.endpoint, this.id, "/studios/curate", "GET");
    }
 }
 var scratchOn = {};
@@ -413,7 +226,7 @@ scratchOn.searchStudios = async function (q,mode,lang,offset,limit){
    };
    return resultList;
 };
-scratchOn.scratchGetList = async function (all, type, endpoint, id, part, method, all, source){
+scratchOn.scratchGetList = async function (all, type, endpoint, id, part, method, source){
    if(all){
       var things = await scratchOn.scratchGetAll(endpoint, id, part, method);
    }else{
