@@ -232,7 +232,7 @@ scratchOn.getUser = async function (user){
    return new User(that.id,that.username,that.history,that.profile);
 }
 scratchOn.getClass = async function (id){
-   var that = await scratchOn.scratchGet("/classrooms/",user,"","GET");
+   var that = await scratchOn.scratchGet("/classrooms/",id,"","GET");
    return new Class(that.id,that.title,that.educator,that["date_start"],that["date_end"],that.description,that.status,that.images);
 }
 scratchOn.searchProjects = async function (q,mode,lang,offset,limit){
