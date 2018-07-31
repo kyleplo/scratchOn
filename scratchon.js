@@ -245,7 +245,7 @@ scratchOn.scratchGetList = async function (all, type, endpoint, id, part, method
       }else if(type === "user"){
          thingList.push(new User(that.id,that.username,that.history,that.profile));
       }else if(type === "comment"){
-         replyList.push(new Comment(that.id,that["parent_id"],that.content,that.author,{created: that["datetime_created"],modified: that["datetime_modified"]},that["reply_count"],source));
+         thingList.push(new Comment(that.id,that["parent_id"],that.content,that.author,{created: that["datetime_created"],modified: that["datetime_modified"]},that["reply_count"],source));
       };
    };
    return thingList;
