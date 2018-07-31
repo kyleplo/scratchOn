@@ -70,7 +70,7 @@ class Studio {
          this.history.modified = history.modified ? scratchOn.fixScratchTimestamp(history.modified) : new Date();
       };
       this.stats = {};
-      this.stats.followers = stats.followers ? stats.followers : -1;
+      this.stats.followers = (stats ? stats.followers : false) ? stats.followers : -1;
       this.htmlLink = "https://scratch.mit.edu/studios/" + (this.id = id ? id : -1);
       this.endpoint = "/studios/";
    }
@@ -125,40 +125,40 @@ class User {
       this.endpoint = "/users/";
    }
    async getProjects(offset,limit){
-      return await scratchOn.scratchGetList(false, "project", this.endpoint, this.id, "/projects?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
+      return await scratchOn.scratchGetList(false, "project", this.endpoint, this.username, "/projects?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllProjects(){
-      return await scratchOn.scratchGetList(true, "project", this.endpoint, this.id, "/projects", "GET");
+      return await scratchOn.scratchGetList(true, "project", this.endpoint, this.username, "/projects", "GET");
    }
    async getFavorites(offset,limit){
-      return await scratchOn.scratchGetList(false, "project", this.endpoint, this.id, "/favorites?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
+      return await scratchOn.scratchGetList(false, "project", this.endpoint, this.username, "/favorites?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllFavorites(){
-      return await scratchOn.scratchGetList(true, "project", this.endpoint, this.id, "/favorites", "GET");
+      return await scratchOn.scratchGetList(true, "project", this.endpoint, this.username, "/favorites", "GET");
    }
    async getFollowers(offset,limit){
-      return await scratchOn.scratchGetList(false, "user", this.endpoint, this.id, "/followers?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
+      return await scratchOn.scratchGetList(false, "user", this.endpoint, this.username, "/followers?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllFollowers(offset,limit){
-      return await scratchOn.scratchGetList(true, "user", this.endpoint, this.id, "/followers", "GET");
+      return await scratchOn.scratchGetList(true, "user", this.endpoint, this.username, "/followers", "GET");
    }
    async getFollowing(offset,limit){
-      return await scratchOn.scratchGetList(false, "user", this.endpoint, this.id, "/following?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
+      return await scratchOn.scratchGetList(false, "user", this.endpoint, this.username, "/following?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllFollowing(offset,limit){
-      return await scratchOn.scratchGetList(true, "user", this.endpoint, this.id, "/following", "GET");
+      return await scratchOn.scratchGetList(true, "user", this.endpoint, this.username, "/following", "GET");
    }
    async getStudiosFollowing(offset,limit) {
-      return await scratchOn.scratchGetList(false, "studio", this.endpoint, this.id, "/studios?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
+      return await scratchOn.scratchGetList(false, "studio", this.endpoint, this.username, "/studios?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllStudiosFollowing() {
-      return await scratchOn.scratchGetList(true, "studio", this.endpoint, this.id, "/studios", "GET");
+      return await scratchOn.scratchGetList(true, "studio", this.endpoint, this.username, "/studios", "GET");
    }
    async getStudiosCurating(offset,limit) {
-      return await scratchOn.scratchGetList(false, "studio", this.endpoint, this.id, "/studios/curate?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
+      return await scratchOn.scratchGetList(false, "studio", this.endpoint, this.username, "/studios/curate?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllStudiosCurating() {
-      return await scratchOn.scratchGetList(true, "studio", this.endpoint, this.id, "/studios/curate", "GET");
+      return await scratchOn.scratchGetList(true, "studio", this.endpoint, this.username, "/studios/curate", "GET");
    }
 }
 var scratchOn = {};
