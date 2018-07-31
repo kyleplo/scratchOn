@@ -161,6 +161,35 @@ class User {
       return await scratchOn.scratchGetList(true, "studio", this.endpoint, this.username, "/studios/curate", "GET");
    }
 }
+class Class {
+   constructor(id,username,educator,history,start,end,desc,status,img) {
+      this.id = id ? id : -1,
+      this.userId = educator.id ? educator.id : -1;
+      this.about = desc ? desc : "";
+      this.workingOn = status ? status : "";
+      this.images = img ? img : {};
+      this.image = img ? (img[Object.keys(img)[0]]) : "about:blank";
+      if(educator.history){
+      this.history = {};
+      this.history.educatorJoined = (educator.history.joined ? scratchOn.fixScratchTimestamp(educator.history.joined) : new Date());
+      this.history.startDate = (start ? scratchOn.fixScratchTimestamp(start) : new Date());
+      this.history.endDate = (end ? scratchOn.fixScratchTimestamp(end) : new Date());
+      this.history.hasEnded = !!end;
+      };
+      if(educator.profile){
+         this.profile = {};
+         this.profile.images = educator.profile.images ? educator.profile.images : {};
+         this.profile.image = educator.profile.images ? (educator.profile.images[Object.keys(educator.profile.images)[0]]) : "about:blank";
+         this.status = {};
+         this.status.about = educator.profile.bio ? educator.profile.bio : "";
+         this.status.workingOn = educator.profile.status ? educator.profile.status : "";
+         this.country = educator.profile.country ? educator.profile.country : "Location Not Given";
+      };
+      this.educator = educator.username ? educator.username : "ScratchOnMissingUser";
+      this.htmlLink = "https://scratch.mit.edu/classes/" + (id ? id : -1);
+      this.endpoint = "/users/";
+   }
+};
 var scratchOn = {};
 scratchOn.api = "https://api.scratch.mit.edu";
 scratchOn.token = "";
