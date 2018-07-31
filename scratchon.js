@@ -162,7 +162,7 @@ class User {
    }
 }
 class Class {
-   constructor(id,username,educator,history,start,end,desc,status,img) {
+   constructor(id,username,educator,start,end,desc,status,img) {
       this.id = id ? id : -1,
       this.userId = educator.id ? educator.id : -1;
       this.about = desc ? desc : "";
@@ -187,7 +187,7 @@ class Class {
       };
       this.educator = educator.username ? educator.username : "ScratchOnMissingUser";
       this.htmlLink = "https://scratch.mit.edu/classes/" + (id ? id : -1);
-      this.endpoint = "/users/";
+      this.endpoint = "/classrooms/";
    }
 };
 var scratchOn = {};
@@ -230,6 +230,10 @@ scratchOn.getStudio = async function (id){
 scratchOn.getUser = async function (user){
    var that = await scratchOn.scratchGet("/users/",user,"","GET");
    return new User(that.id,that.username,that.history,that.profile);
+}
+scratchOn.getClass = async function (id){
+   var that = await scratchOn.scratchGet("/classrooms/",user,"","GET");
+   return new Class(that.id,that.title,that.educator,that["date_start"],that["date_end"],that.description,that.status,that.images);
 }
 scratchOn.searchProjects = async function (q,mode,lang,offset,limit){
    var results = await scratchOn.scratchGet("/search/","projects","/?q=" + (q ? q : "") + "&mode=" + (mode ? mode : (q ? "popular" : "trending")) + "&language=" + (lang ? lang : "en") + "&offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 20),"GET");
