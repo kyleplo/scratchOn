@@ -413,3 +413,27 @@ scratchOn.searchStudios = async function (q,mode,lang,offset,limit){
    };
    return resultList;
 };
+scratchOn.scratchGetList = async function (all, type, endpoint, id, part, method, all, source){
+   if(all){
+      var things = await scratchOn.scratchGetAll(endpoint, id, part, method);
+   }else{
+      var things = await scratchOn.scratchGet(endpoint, id, part, method);
+   };
+   if(things === "FetchError"){
+      return [];
+   };
+   var thingList = [];
+   for(var i = 0;i < things.length;i++){
+      var that = things[i];
+      if(type === "project"){
+         thingList.push(new Project(that.id,((that.author ? that.author.username : false) ? that.author.username : "ScratchOnMissingUser"),((that.author ? that.author.id : false) ? that.author.id : -1),that.title,{instructions: that.instructions,description: that.description},that.history,that.stats,that.remix,that.image));
+      }else if(type === "studio"){
+         thingList.push(new Studio(that.id,that.owner,that.title,that.description,that.history,that.image,that.stats));
+      }else if(type === "user"){
+         thingList.push(new User(that.id,that.username,that.history,that.profile));
+      }else if(type === "comment"){
+         replyList.push(new Comment(that.id,that["parent_id"],that.content,that.author,{created: that["datetime_created"],modified: that["datetime_modified"]},that["reply_count"],source));
+      };
+   };
+   return thingList;
+}
