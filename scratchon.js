@@ -161,6 +161,35 @@ class User {
       return await scratchOn.scratchGetList(true, "studio", this.endpoint, this.username, "/studios/curate", "GET");
    }
 }
+class Class {
+   constructor(id,username,educator,start,end,desc,status,img) {
+      this.id = id ? id : -1,
+      this.userId = educator.id ? educator.id : -1;
+      this.about = desc ? desc : "";
+      this.workingOn = status ? status : "";
+      this.images = img ? img : {};
+      this.image = img ? (img[Object.keys(img)[0]]) : "about:blank";
+      if(educator.history){
+      this.history = {};
+      this.history.educatorJoined = (educator.history.joined ? scratchOn.fixScratchTimestamp(educator.history.joined) : new Date());
+      this.history.startDate = (start ? scratchOn.fixScratchTimestamp(start) : new Date());
+      this.history.endDate = (end ? scratchOn.fixScratchTimestamp(end) : new Date());
+      this.history.hasEnded = !!end;
+      };
+      if(educator.profile){
+         this.profile = {};
+         this.profile.images = educator.profile.images ? educator.profile.images : {};
+         this.profile.image = educator.profile.images ? (educator.profile.images[Object.keys(educator.profile.images)[0]]) : "about:blank";
+         this.status = {};
+         this.status.about = educator.profile.bio ? educator.profile.bio : "";
+         this.status.workingOn = educator.profile.status ? educator.profile.status : "";
+         this.country = educator.profile.country ? educator.profile.country : "Location Not Given";
+      };
+      this.educator = educator.username ? educator.username : "ScratchOnMissingUser";
+      this.htmlLink = "https://scratch.mit.edu/classes/" + (id ? id : -1);
+      this.endpoint = "/classrooms/";
+   }
+};
 var scratchOn = {};
 scratchOn.api = "https://api.scratch.mit.edu";
 scratchOn.token = "";
@@ -201,6 +230,10 @@ scratchOn.getStudio = async function (id){
 scratchOn.getUser = async function (user){
    var that = await scratchOn.scratchGet("/users/",user,"","GET");
    return new User(that.id,that.username,that.history,that.profile);
+}
+scratchOn.getClass = async function (id){
+   var that = await scratchOn.scratchGet("/classrooms/",id,"","GET");
+   return new Class(that.id,that.title,that.educator,that["date_start"],that["date_end"],that.description,that.status,that.images);
 }
 scratchOn.searchProjects = async function (q,mode,lang,offset,limit){
    var results = await scratchOn.scratchGet("/search/","projects","/?q=" + (q ? q : "") + "&mode=" + (mode ? mode : (q ? "popular" : "trending")) + "&language=" + (lang ? lang : "en") + "&offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 20),"GET");
