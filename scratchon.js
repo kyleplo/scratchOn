@@ -214,7 +214,7 @@ scratchOn.scratchGetAll = async function (endpoint, id, part, method){
    var offset = 0;
    do {
       theseResults = await scratchOn.scratchGet(endpoint, id, part + "?offset=" + offset + "&limit=40", method);
-      results.push(theseResults);
+      results.push(...theseResults);
       offset++;
    } while(theseResults.length === 40);
    return results;
