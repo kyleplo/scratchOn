@@ -30,6 +30,10 @@ class Project {
       this.htmlLink = "https://scratch.mit.edu/projects/" + (this.id = id ? id : -1);
       this.endpoint = "/projects/";
    }
+   async getAuthor(){
+      var that = await scratchOn.scratchGet("/users/",this.user,"","GET");
+      return new User(that.id,that.username,that.history,that.profile);
+   }
    async getRemixes(offset,limit) {
       return await scratchOn.scratchGetList(false, "project", this.endpoint, this.id, "/remixes?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
@@ -95,6 +99,10 @@ class Comment {
       this.replies = replies ? replies : -1;
       this.hasReplies = (replies > 0);
       this.endpoint = "/comments/";
+   }
+   async getAuthor(){
+      var that = await scratchOn.scratchGet("/users/",this.user,"","GET");
+      return new User(that.id,that.username,that.history,that.profile);
    }
    async getReplies(offset,limit) {
       return await scratchOn.scratchGetList(false, "comment", this.endpoint + this.source.endpoint, this.source.id + "/" + this.id, "?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET",this.source);
@@ -188,6 +196,10 @@ class Class {
       this.educator = educator.username ? educator.username : "ScratchOnMissingUser";
       this.htmlLink = "https://scratch.mit.edu/classes/" + (id ? id : -1);
       this.endpoint = "/classrooms/";
+   }
+   async getEducator(){
+      var that = await scratchOn.scratchGet("/users/",this.educator,"","GET");
+      return new User(that.id,that.username,that.history,that.profile);
    }
 };
 var scratchOn = {};
