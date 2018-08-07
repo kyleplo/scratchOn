@@ -51,10 +51,10 @@ class Project {
       return {loved: lovedInfo.userLove,faved: favedInfo.userFavorite};
    }
    async getComments(offset,limit) {
-      return await scratchOn.scratchGetList(false, "comment", "/comments/project/", this.id, "?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET",{endpoint: "projects/",id: this.id});
+      return await scratchOn.scratchGetList(false, "comment", "/comments/project/", this.id, "?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET",{endpoint: "project/",id: this.id});
    }
    async getAllComments() {
-      return await scratchOn.scratchGetList(true, "comment", "/comments/project/", this.id, "", "GET",{endpoint: "projects/",id: this.id});
+      return await scratchOn.scratchGetList(true, "comment", "/comments/project/", this.id, "", "GET",{endpoint: "project/",id: this.id});
    }
 }
 class Studio {
@@ -215,7 +215,7 @@ scratchOn.scratchGetAll = async function (endpoint, id, part, method){
    do {
       theseResults = await scratchOn.scratchGet(endpoint, id, part + "?offset=" + offset + "&limit=40", method);
       results.push(...theseResults);
-      offset++;
+      offset += 40;
    } while(theseResults.length === 40);
    return results;
 }
