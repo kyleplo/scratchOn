@@ -216,7 +216,7 @@ class CloudActivityItem {
       this.isNew = (item.verb ? item.verb : "no_verb") === "create_var";
       this.name = item.name;
       this.value = item.value;
-      this.timestamp = (item.timestamp ? scratchOn.fixScratchTimestamp(item.timestamp) : new Date());;
+      this.timestamp = (item.timestamp ? new Date(item.timestamp) : new Date());;
    }
    async getUser(){
       var that = await scratchOn.scratchGet("/users/",this.user,"","GET");
@@ -228,7 +228,7 @@ class ProjectCloudInfo {
       this.id = projectId ? projectId : -1;
       this.items = data.length;
       this.hasCloudData = data.length > 0;
-      this.lastUpdated = (data[0] ? scratchOn.fixScratchTimestamp(data[0].timestamp) : new Date());
+      this.lastUpdated = (data[0] ? new Date(data[0].timestamp) : new Date());
       this.activity = [];
       this.vars = [];
       for(var i = 0;i < data.length;i++){
