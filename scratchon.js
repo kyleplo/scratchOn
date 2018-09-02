@@ -60,6 +60,14 @@ class Project {
    async getAllComments() {
       return await scratchOn.scratchGetList(true, "comment", "/comments/project/", this.id, "", "GET",{endpoint: "project/",id: this.id});
    }
+   async getCloud(offset,limit){
+      var that = await scratchOn.scratchGet("/logs?projectid=",this.id,"&offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40),"GET",true);
+      return new ProjectCloudInfo(that,this.id);
+   }
+   async getAllCloud(){
+   var that = await scratchOn.scratchGetAll("/logs?projectid=",this.id,"","GET",true);
+   return new ProjectCloudInfo(that,this.id);
+}
 }
 class Studio {
    constructor(id,user,title,desc,history,image,stats) {
@@ -202,15 +210,45 @@ class Class {
       return new User(that.id,that.username,that.history,that.profile);
    }
 };
+class CloudActivityItem {
+   constructor(item) {
+      this.user = item.user ? item.user : "ScratchOnMissingUser";
+      this.isNew = (item.verb ? item.verb : "no_verb") === "create_var";
+      this.name = item.name;
+      this.value = item.value;
+      this.timestamp = (item.timestamp ? new Date(item.timestamp) : new Date());;
+   }
+   async getUser(){
+      var that = await scratchOn.scratchGet("/users/",this.user,"","GET");
+      return new User(that.id,that.username,that.history,that.profile);
+   }
+}
+class ProjectCloudInfo {
+   constructor(data,projectId) {
+      this.id = projectId ? projectId : -1;
+      this.items = data.length;
+      this.hasCloudData = data.length > 0;
+      this.lastUpdated = (data[0] ? new Date(data[0].timestamp) : new Date());
+      this.activity = [];
+      this.vars = [];
+      for(var i = 0;i < data.length;i++){
+         this.activity.push(new CloudActivityItem(data[i]));
+         if(this.vars.indexOf(data[i].name) < 0){
+            this.vars.push(data[i].name);
+         };
+      };
+   }
+}
 var scratchOn = {};
 scratchOn.api = "https://api.scratch.mit.edu";
+scratchOn.cloudApi = "https://clouddata.scratch.mit.edu";
 scratchOn.token = "";
 scratchOn.fixScratchTimestamp = function (d){
  var a = d.slice(0,10).split("-");
  return new Date(a[0],(a[1] - 1),a[2]);
 }
-scratchOn.scratchGet = function (endpoint, id, part, method){
-   return fetch(scratchOn.api + endpoint + id + part,{method: method})
+scratchOn.scratchGet = function (endpoint, id, part, method, isCloud){
+   return fetch((isCloud ? scratchOn.cloudApi : scratchOn.api) + endpoint + id + part,{method: method})
       .then(function (r){
          return r.json();
       })
@@ -220,12 +258,12 @@ scratchOn.scratchGet = function (endpoint, id, part, method){
          });
     });
 };
-scratchOn.scratchGetAll = async function (endpoint, id, part, method){
+scratchOn.scratchGetAll = async function (endpoint, id, part, method, isCloud){
    var results = [];
    var theseResults = [];
    var offset = 0;
    do {
-      theseResults = await scratchOn.scratchGet(endpoint, id, part + "?offset=" + offset + "&limit=40", method);
+      theseResults = await scratchOn.scratchGet(endpoint, id, part + ((endpoint + id + part).indexOf("?") > -1 ? "&" : "?") + "offset=" + offset + "&limit=40", method, isCloud);
       results.push(...theseResults);
       offset += 40;
    } while(theseResults.length === 40);
@@ -271,6 +309,14 @@ scratchOn.searchStudios = async function (q,mode,lang,offset,limit){
    };
    return resultList;
 };
+scratchOn.getCloudForProject = async function (id,offset,limit){
+   var that = await scratchOn.scratchGet("/logs?projectid=",id,"&offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40),"GET",true);
+   return new ProjectCloudInfo(that,id);
+}
+scratchOn.getAllCloudForProject = async function (id){
+   var that = await scratchOn.scratchGetAll("/logs?projectid=",id,"","GET",true);
+   return new ProjectCloudInfo(that,id);
+}
 scratchOn.scratchGetList = async function (all, type, endpoint, id, part, method, source){
    if(all){
       var things = await scratchOn.scratchGetAll(endpoint, id, part, method);
