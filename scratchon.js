@@ -86,6 +86,12 @@ class Studio {
       this.htmlLink = "https://scratch.mit.edu/studios/" + (this.id = id ? id : -1);
       this.endpoint = "/studios/";
    }
+   async getProjects(offset, limit){
+      return await scratchOn.scratchGetList(false, "project", this.endpoint, this.id, "/projects?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
+   }
+   async getAllProjects(){
+      return await scratchOn.scratchGetList(true, "project", this.endpoint, this.id, "/projects", "GET");
+   }
 }
 class Comment {
    constructor(id,parent,content,author,history,replies,source) {
