@@ -87,10 +87,10 @@ class Studio {
       this.endpoint = "/studios/";
    }
    async getProjects(offset, limit){
-      return await scratchOn.scratchGetList(false, "project", this.endpoint, this.id, "?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
+      return await scratchOn.scratchGetList(false, "project", this.endpoint, this.id, "/projects?offset=" + (offset ? offset : 0) + "&limit=" + (limit ? limit : 40), "GET");
    }
    async getAllProjects(){
-      return await scratchOn.scratchGetList(true, "project", this.endpoint, this.id, "", "GET");
+      return await scratchOn.scratchGetList(true, "project", this.endpoint, this.id, "/projects", "GET");
    }
 }
 class Comment {
